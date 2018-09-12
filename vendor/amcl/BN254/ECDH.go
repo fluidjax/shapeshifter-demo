@@ -22,7 +22,7 @@ under the License.
 package BN254
 
 //import "fmt"
-import "github.com/milagro-crypto/amcl/version3/go/amcl"
+import "amcl"
 
 const INVALID_PUBLIC_KEY int=-2
 const ERROR int=-3
