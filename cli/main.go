@@ -1,13 +1,13 @@
 package main
 
 import (
-	"encoding/hex"
-	"flag"
-	"fmt"
 	"amcl"
 	"amcl/BN254"
 	"bufio"
+	"encoding/hex"
 	"encoding/json"
+	"flag"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"time"
@@ -46,14 +46,14 @@ func genServerKey(S string) string {
 
 	var SSTHex string
 
-	if S != ""{
+	if S != "" {
 		const MFS = BN254.MFS
 		const G2S = 4 * MFS /* Group 2 Size */
 		var SST [G2S]byte
 		SByte, _ := hex.DecodeString(S)
 		BN254.MPIN_GET_SERVER_SECRET(SByte[:], SST[:])
 		SSTHex = hex.EncodeToString(SST[:])
-	}else{
+	} else {
 		fmt.Println("No Master Key Found")
 	}
 	return SSTHex
@@ -62,7 +62,7 @@ func genServerKey(S string) string {
 func writeConfigFile(serverVals Config) {
 	serverVals.TimeStamp = time.Now()
 	configJSON, _ := json.MarshalIndent(serverVals, "", "")
-	err := ioutil.WriteFile("../config.json", configJSON, 0644)
+	err := ioutil.WriteFile("config.json", configJSON, 0644)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -77,7 +77,7 @@ func main() {
 
 	//Read serverConfig from Config file
 	var serverConfig Config
-	config, err := ioutil.ReadFile("../config.json")
+	config, err := ioutil.ReadFile("config.json")
 	if err != nil {
 		//ToDo: need to check for "no such file or directory"
 		fmt.Println(err)
@@ -86,34 +86,34 @@ func main() {
 	}
 
 	if *createMasterKeyPtr {
-		if serverConfig.MasterSecret != ""{
+		if serverConfig.MasterSecret != "" {
 			reader := bufio.NewReader(os.Stdin)
 			fmt.Println("You already have a Master Secret, are you sure? Press Y to continue")
 			decision, _ := reader.ReadString('\n')
-			if decision == "Y\n"{
+			if decision == "Y\n" {
 				serverConfig.MasterSecret = genMasterKey()
 				writeConfigFile(serverConfig)
-			}else{
+			} else {
 				fmt.Println("A Wise Choice")
 			}
-		}else{
+		} else {
 			serverConfig.MasterSecret = genMasterKey()
 			writeConfigFile(serverConfig)
 		}
 	}
 
 	if *createServerKeyPtr {
-		if serverConfig.ServerSecret != ""{
+		if serverConfig.ServerSecret != "" {
 			reader := bufio.NewReader(os.Stdin)
 			fmt.Println("You already have a Server Secret, are you sure? Press Y to continue")
 			decision, _ := reader.ReadString('\n')
-			if decision == "Y\n"{
+			if decision == "Y\n" {
 				serverConfig.ServerSecret = genServerKey(serverConfig.MasterSecret)
 				writeConfigFile(serverConfig)
-			}else{
+			} else {
 				fmt.Println("A Wise Choice")
 			}
-		}else{
+		} else {
 			serverConfig.ServerSecret = genServerKey(serverConfig.MasterSecret)
 			writeConfigFile(serverConfig)
 		}
